@@ -1,2 +1,2 @@
-# project-ai-biz-consultant-flutter
-project-ai-biz-consultant-flutter
+# project_ai_biz_consultant_flutter
+project_ai_biz_consultant_flutter
