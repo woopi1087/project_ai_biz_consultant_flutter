@@ -1,4 +1,5 @@
 # project_ai_biz_consultant_flutter
+<<<<<<< HEAD
 
 A new Flutter project.
 
