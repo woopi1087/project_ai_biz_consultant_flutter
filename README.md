@@ -136,3 +136,17 @@ lib/
 - 네트워크: `dio`
 - 라우팅: `go_router`, `auto_route`
 - 저장소: `shared_preferences`, `hive`
+
+
+
+## 흐름
+
+- 앱 진입
+main.dart
+  ↓
+SplashPage          ← 앱 로딩 화면
+  ↓
+MainShellPage       ← 하단 내비바 + 탭 구조 (고정된 뼈대)
+  ├─ HomeTab()      ← 내비 탭 1번
+  ├─ AiTab()        ← 내비 탭 2번
+  └─ SettingsTab()  ← 내비 탭 3번

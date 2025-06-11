@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../home/home_page.dart'; // HomePage 경로 맞게 수정하시오
+import 'package:project_ai_biz_consultant_flutter/features/shell/main_shell_page.dart';
+import '../home/home_tab.dart'; // HomePage 경로 맞게 수정하시오
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -35,7 +36,7 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
 
       // 👉 바로 홈으로 라우팅
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => HomePage()),
+        MaterialPageRoute(builder: (_) => MainShellPage()),
       );
     });
   }
