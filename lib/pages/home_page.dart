@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:project_ai_biz_consultant_flutter/features/location_analysis/location_analysis_start_page.dart';
+import 'package:project_ai_biz_consultant_flutter/pages/location/location_select_page.dart';
 
-class HomeTab extends StatelessWidget {
-  const HomeTab({super.key});
+class HomePage extends StatelessWidget {
+  const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +41,7 @@ class HomeTab extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => const LocationAnalysisStartPage(),
+                            builder: (_) => LocationSelectPage(),
                           ),
                         );
                       },
@@ -51,20 +51,69 @@ class HomeTab extends StatelessWidget {
                       icon: Icons.business_center,
                       title: '업종 추천',
                       onTap: () {
-                        // TODO: 업종 추천 페이지 이동
+                        showDialog(
+                          context: context,
+                          builder:
+                              (_) => AlertDialog(
+                                title: const Text("준비 중입니다"),
+                                content: const Text(
+                                  "해당 기능은 현재 준비 중입니다.\n곧 만나요!",
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    child: const Text("확인"),
+                                  ),
+                                ],
+                              ),
+                        );
                       },
                     ),
                     _buildConsultCard(
                       context,
                       icon: Icons.analytics,
                       title: '매출 예측',
-                      onTap: () {},
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          builder:
+                              (_) => AlertDialog(
+                                title: const Text("준비 중입니다"),
+                                content: const Text(
+                                  "해당 기능은 현재 준비 중입니다.\n곧 만나요!",
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    child: const Text("확인"),
+                                  ),
+                                ],
+                              ),
+                        );
+                      },
                     ),
                     _buildConsultCard(
                       context,
                       icon: Icons.support,
                       title: '정부지원금 찾기',
-                      onTap: () {},
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          builder:
+                              (_) => AlertDialog(
+                                title: const Text("준비 중입니다"),
+                                content: const Text(
+                                  "해당 기능은 현재 준비 중입니다.\n곧 만나요!",
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    child: const Text("확인"),
+                                  ),
+                                ],
+                              ),
+                        );
+                      },
                     ),
                   ],
                 ),

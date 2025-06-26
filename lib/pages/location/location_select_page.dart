@@ -1,0 +1,291 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_naver_map/flutter_naver_map.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:project_ai_biz_consultant_flutter/pages/location/location_loading_page.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+
+class LocationSelectPage extends StatefulWidget {
+  const LocationSelectPage({super.key});
+
+  @override
+  State<LocationSelectPage> createState() => _LocationSelectPageState();
+}
+
+class _LocationSelectPageState extends State<LocationSelectPage> {
+  NaverMapController? _mapController;
+  final TextEditingController _searchController = TextEditingController();
+  String? _currentMarkerId;
+  String? _currentPolygonId;
+
+  final clientId = dotenv.env['NAVER_CLIENT_ID'];
+  final clientSecret = dotenv.env['NAVER_CLIENT_SECRET'];
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _addLocationWithBoundary('연남동', const NLatLng(37.5610, 126.9258));
+    });
+  }
+
+  Future<void> _addLocationWithBoundary(
+    String locationName,
+    NLatLng position,
+  ) async {
+    if (_mapController == null) return;
+    await _clearOverlays();
+    await _addMarker(locationName, position);
+    await _addBoundaryPolygon(locationName, position);
+    await _moveCamera(position);
+  }
+
+  Future<void> _clearOverlays() async {
+    if (_mapController == null) return;
+    await _mapController?.clearOverlays();
+    _currentMarkerId = null;
+    _currentPolygonId = null;
+  }
+
+  Future<void> _addMarker(String locationName, NLatLng position) async {
+    final marker = NMarker(id: 'location_marker', position: position);
+    marker.setCaption(NOverlayCaption(text: locationName));
+    await _mapController?.addOverlay(marker);
+    _currentMarkerId = 'location_marker';
+  }
+
+  Future<void> _addBoundaryPolygon(
+    String locationName,
+    NLatLng centerPosition,
+  ) async {
+    try {
+      final boundaryCoords = await _getBoundaryCoordinates(
+        locationName,
+        centerPosition,
+      );
+      if (boundaryCoords.isNotEmpty) {
+        final polygon = NPolygonOverlay(
+          id: 'boundary_polygon',
+          coords: boundaryCoords,
+          color: Colors.blue.withOpacity(0.3),
+          outlineColor: Colors.blue,
+          outlineWidth: 2,
+        );
+        await _mapController?.addOverlay(polygon);
+        _currentPolygonId = 'boundary_polygon';
+      }
+    } catch (_) {
+      await _addCircularBoundary(centerPosition);
+    }
+  }
+
+  Future<List<NLatLng>> _getBoundaryCoordinates(
+    String name,
+    NLatLng center,
+  ) async {
+    final Map<String, List<NLatLng>> boundaries = {
+      '연남동': [
+        const NLatLng(37.5650, 126.9200),
+        const NLatLng(37.5680, 126.9280),
+        const NLatLng(37.5620, 126.9320),
+        const NLatLng(37.5580, 126.9280),
+        const NLatLng(37.5570, 126.9220),
+        const NLatLng(37.5620, 126.9180),
+      ],
+    };
+    for (final key in boundaries.keys) {
+      if (key.contains(name) || name.contains(key)) {
+        return boundaries[key]!;
+      }
+    }
+    return [];
+  }
+
+  Future<void> _addCircularBoundary(NLatLng center) async {
+    final circle = NCircleOverlay(
+      id: 'boundary_circle',
+      center: center,
+      radius: 800,
+      color: Colors.green.withOpacity(0.2),
+      outlineColor: Colors.green,
+      outlineWidth: 2,
+    );
+    await _mapController?.addOverlay(circle);
+    _currentPolygonId = 'boundary_circle';
+  }
+
+  Future<void> _moveCamera(NLatLng position) async {
+    await _mapController?.updateCamera(
+      NCameraUpdate.scrollAndZoomTo(target: position, zoom: 14),
+    );
+  }
+
+  Future<NLatLng?> _searchLocationWithGeocoding(String query) async {
+    try {
+      final response = await http.get(
+        Uri.parse(
+          'https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode?query=$query',
+        ),
+        headers: {
+          'X-NCP-APIGW-API-KEY-ID': clientId ?? '',
+          'X-NCP-APIGW-API-KEY': clientSecret ?? '',
+        },
+      );
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final addresses = data['addresses'] as List;
+        if (addresses.isNotEmpty) {
+          final first = addresses[0];
+          final lat = double.parse(first['y']);
+          final lng = double.parse(first['x']);
+          return NLatLng(lat, lng);
+        }
+      }
+    } catch (_) {}
+    return null;
+  }
+
+  Future<void> _performSearch() async {
+    final query = _searchController.text.trim();
+    if (query.isEmpty) return;
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator()),
+    );
+    try {
+      final location = await _searchLocationWithGeocoding(query);
+      if (mounted) Navigator.of(context).pop();
+      if (location != null) {
+        await _addLocationWithBoundary(query, location);
+        if (mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('$query 위치 표시 완료')));
+        }
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('위치를 찾을 수 없습니다.')));
+        }
+      }
+    } catch (_) {
+      if (mounted) Navigator.of(context).pop();
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('검색 중 오류 발생')));
+    }
+  }
+
+  void _startAnalysis() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const LoadingPage()),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("입지 선택")),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _searchController,
+                    decoration: const InputDecoration(
+                      hintText: '동 이름을 입력하세요',
+                      border: OutlineInputBorder(),
+                    ),
+                    onSubmitted: (_) => _performSearch(),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                ElevatedButton(
+                  onPressed: _performSearch,
+                  child: const Text("검색"),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(
+            height: 400,
+            width: 400,
+            child: Stack(
+              children: [
+                NaverMap(
+                  onMapReady: (controller) async {
+                    _mapController = controller;
+                    await _addLocationWithBoundary(
+                      '연남동',
+                      const NLatLng(37.5610, 126.9258),
+                    );
+                  },
+                  options: const NaverMapViewOptions(
+                    mapType: NMapType.basic,
+                    initialCameraPosition: NCameraPosition(
+                      target: NLatLng(37.5665, 126.9780),
+                      zoom: 13,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const Spacer(),
+          // 하단에 분석 시작 버튼
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                onPressed: () {
+                  final address =
+                      _searchController.text.trim().isEmpty
+                          ? '연남동'
+                          : _searchController.text.trim();
+
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (_) => LocationLoadingPage(selectedAddress: address),
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.black,
+                  foregroundColor: Colors.white,
+                  textStyle: const TextStyle(fontSize: 16),
+                ),
+                child: const Text('분석 시작'),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+}
+
+class LoadingPage extends StatelessWidget {
+  const LoadingPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(body: Center(child: CircularProgressIndicator()));
+  }
+}

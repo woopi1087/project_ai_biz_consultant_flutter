@@ -1,11 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:project_ai_biz_consultant_flutter/features/splash/splash_page.dart';
+import 'package:flutter_naver_map/flutter_naver_map.dart';
+import 'package:project_ai_biz_consultant_flutter/screens/splash_screen.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(); // 환경변수 로드
+
+  await FlutterNaverMap().init(
+    clientId: dotenv.env['NAVER_CLIENT_ID'],  // 예: 31j0mmqupg
+    onAuthFailed: (ex) {
+      print('네이버 지도 인증 실패: $ex');
+    },
+  );
+
   runApp(const MyApp());
 }
 
-/// 앱의 루트 위젯
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -13,12 +24,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'AI 비즈 컨설턴트',
-      // 전역 테마 설정 (기본 색상 등)
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      // 첫 진입 화면: 스플래시
-      home: const SplashPage(),
+      home: const SplashScreen(),
     );
   }
 }

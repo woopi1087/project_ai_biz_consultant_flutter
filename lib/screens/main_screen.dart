@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:project_ai_biz_consultant_flutter/features/home/home_tab.dart';
+import 'package:project_ai_biz_consultant_flutter/pages/home_page.dart';
 
-class MainShellPage extends StatefulWidget {
-  const MainShellPage({super.key});
+class MainScreen extends StatefulWidget {
+  const MainScreen({super.key});
 
   @override
-  State<MainShellPage> createState() => _MainShellPageState();
+  State<MainScreen> createState() => _MainScreenState();
 }
 
-class _MainShellPageState extends State<MainShellPage> {
+class _MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
 
   // 각 탭에 보여줄 껍데기 내용
   final List<Widget> _pages = const [
-    HomeTab(), // ← 기존 Center에서 홈탭으로 교체
+    HomePage(), // ← 기존 Center에서 홈탭으로 교체
     Center(child: Text("🧪 컨설팅", style: TextStyle(fontSize: 24))),
     Center(child: Text("🧪 분석", style: TextStyle(fontSize: 24))),
     Center(child: Text("🧪 알림", style: TextStyle(fontSize: 24))),

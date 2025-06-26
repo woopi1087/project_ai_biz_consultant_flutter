@@ -1,4 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.INTERNET"/>
     <application
         android:label="project_ai_biz_consultant_flutter"
         android:name="${applicationName}"
@@ -30,6 +31,10 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <!-- 🔑 네이버 지도 API Client ID 등록 -->
+        <meta-data
+            android:name="com.naver.maps.map.CLIENT_ID"
+            android:value="31j0mmqupg" />
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and
