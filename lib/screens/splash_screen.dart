@@ -16,7 +16,6 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
   void initState() {
     super.initState();
 
-    // 페이드 인/아웃 애니메이션 설정
     _controller = AnimationController(
       duration: const Duration(milliseconds: 800),
       vsync: this,
@@ -26,17 +25,14 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
       CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
     );
 
-    _controller.forward(); // 페이드 인
+    _controller.forward();
 
-    // 800ms 인 + 600ms 유지 후 = 1400ms
     Future.delayed(const Duration(milliseconds: 1400), () async {
-      await _controller.reverse(); // 페이드 아웃
-      await Future.delayed(const Duration(milliseconds: 100)); // 공백 제거용 딜레이
+      await _controller.reverse();
+      await Future.delayed(const Duration(milliseconds: 100));
 
-      // 👉 바로 홈으로 라우팅
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => MainScreen()), // 하단 네이게이션 쉘 페이지
-        // MaterialPageRoute(builder: (_) => HomePage()), // 홈 페이지
+        MaterialPageRoute(builder: (_) => const MainScreen()),
       );
     });
   }
@@ -50,12 +46,22 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFE4EAF4),
       body: FadeTransition(
         opacity: _animation,
-        child: SizedBox.expand(
-          child: Image.asset(
-            'assets/images/splash_logo.png', // pubspec.yaml에 등록 필요
-            fit: BoxFit.cover,
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const SizedBox(height: 20),
+              SizedBox(
+                width: 160,
+                child: Image.asset(
+                  'assets/images/bizpal_logo.png',
+                  fit: BoxFit.contain,
+                ),
+              ),
+            ],
           ),
         ),
       ),
