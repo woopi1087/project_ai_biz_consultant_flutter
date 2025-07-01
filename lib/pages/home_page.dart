@@ -7,127 +7,92 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFE4EAF4),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 24),
-              const Text(
-                '안녕하세요, 사장님!',
-                style: TextStyle(
-                  fontSize: 26,
-                  fontWeight: FontWeight.w700,
-                  color: Color(0xFF1F2937),
-                ),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'AI가 함께하는 창업 컨설팅 도우미입니다',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Color(0xFF6B7280),
-                ),
-              ),
-              const SizedBox(height: 24),
-              Expanded(
-                child: ListView(
-                  children: [
-                    _buildConsultCard(
-                      context,
-                      icon: Icons.place,
-                      title: '입지 분석',
-                      subtitle: '좋은 자리는 고객을 불러옵니다.',
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => const LocationSelectPage()),
-                        );
-                      },
-                    ),
-                    _buildConsultCard(
-                      context,
-                      icon: Icons.business_center,
-                      title: '업종 추천',
-                      subtitle: '상권에 꼭 맞는 업종을 추천드려요.',
-                      onTap: () {
-                        _showComingSoonDialog(context);
-                      },
-                    ),
-                    _buildConsultCard(
-                      context,
-                      icon: Icons.analytics,
-                      title: '매출 예측',
-                      subtitle: '매출 흐름을 미리 파악해볼 수 있어요.',
-                      onTap: () {
-                        _showComingSoonDialog(context);
-                      },
-                    ),
-                    _buildConsultCard(
-                      context,
-                      icon: Icons.support,
-                      title: '정부지원금 찾기',
-                      subtitle: '몰라서 못 받는 지원금, 함께 찾아드릴게요.',
-                      onTap: () {
-                        _showComingSoonDialog(context);
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ],
+      backgroundColor: const Color(0xFFF9FAFF),
+      appBar: AppBar(
+        backgroundColor: const Color(0xFFF9FAFF), // ✅ 배경색 통일
+        elevation: 0, // ✅ 그림자 제거
+        leading: const BackButton(color: Colors.black),
+        title: const Text(
+          '창업 컨설팅',
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
           ),
+        ),
+      ),
+      body: SafeArea(
+        child: ListView(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          children: [
+            _buildServiceTile(
+              icon: Icons.place,
+              iconColor: Colors.indigo,
+              title: '입지 분석',
+              subtitle: '좋은 자리는 고객을 불러옵니다.',
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const LocationSelectPage()),
+                );
+              },
+            ),
+            _buildServiceTile(
+              icon: Icons.business_center,
+              iconColor: Colors.blue,
+              title: '업종 추천',
+              subtitle: '상권에 꼭 맞는 업종을 추천드려요.',
+              onTap: () {
+                _showComingSoonDialog(context);
+              },
+            ),
+            _buildServiceTile(
+              icon: Icons.analytics,
+              iconColor: Colors.deepPurple,
+              title: '매출 예측',
+              subtitle: '매출 흐름을 미리 파악해볼 수 있어요.',
+              onTap: () {
+                _showComingSoonDialog(context);
+              },
+            ),
+            _buildServiceTile(
+              icon: Icons.support,
+              iconColor: Colors.teal,
+              title: '정부지원금 찾기',
+              subtitle: '몰라서 못 받는 지원금, 함께 찾아드릴게요.',
+              onTap: () {
+                _showComingSoonDialog(context);
+              },
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildConsultCard(
-    BuildContext context, {
+  Widget _buildServiceTile({
     required IconData icon,
+    required Color iconColor,
     required String title,
     required String subtitle,
     required VoidCallback onTap,
   }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Card(
-        color: const Color(0xFFF9FAFF), // 부드러운 카드 배경
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        elevation: 2,
-        margin: const EdgeInsets.only(bottom: 16),
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Row(
-            children: [
-              Icon(icon, size: 36, color: Color(0xFF4C78FF)),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(title,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF1F2937),
-                        )),
-                    const SizedBox(height: 4),
-                    Text(subtitle,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: Color(0xFF6B7280),
-                        )),
-                  ],
-                ),
-              ),
-              const Icon(Icons.arrow_forward_ios, size: 16, color: Color(0xFF9CA3AF)),
-            ],
-          ),
-        ),
+    return ListTile(
+      contentPadding: const EdgeInsets.symmetric(vertical: 12),
+      leading: CircleAvatar(
+        backgroundColor: iconColor.withOpacity(0.1),
+        radius: 28,
+        child: Icon(icon, color: iconColor, size: 28),
       ),
+      title: Text(
+        title,
+        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+      ),
+      subtitle: Text(
+        subtitle,
+        style: const TextStyle(color: Color(0xFF6B7280), fontSize: 14),
+      ),
+      trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Color(0xFF9CA3AF)),
+      onTap: onTap,
     );
   }
 

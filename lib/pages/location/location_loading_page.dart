@@ -20,8 +20,7 @@ class _LocationLoadingPageState extends State<LocationLoadingPage> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (_) =>
-              LocationResultPage(address: widget.selectedAddress),
+          builder: (_) => LocationResultPage(address: widget.selectedAddress),
         ),
       );
     });
@@ -30,20 +29,37 @@ class _LocationLoadingPageState extends State<LocationLoadingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const CircularProgressIndicator(strokeWidth: 5),
-              const SizedBox(height: 24),
-              const Text('입지를 분석 중입니다...',
-                  style: TextStyle(fontSize: 18)),
-              const SizedBox(height: 12),
-              Text("선택한 위치: ${widget.selectedAddress}",
-                  style: const TextStyle(color: Colors.grey)),
-            ],
+      backgroundColor: const Color(0xFFF9FAFF),
+      body: SafeArea(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const CircularProgressIndicator(
+                  strokeWidth: 6,
+                  color: Color(0xFF4C78FF),
+                ),
+                const SizedBox(height: 32),
+                const Text(
+                  '입지를 분석 중입니다...',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF1F2937),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  "선택한 위치: ${widget.selectedAddress}",
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: Color(0xFF6B7280),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
